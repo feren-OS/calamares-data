@@ -1,0 +1,7 @@
+#!/bin/bash
+
+python3 /usr/share/calamares/scripts/set-locale.py
+if [ ! "$1" = "--do-not-purge" ]; then
+    apt-get purge -y feren-calamares-languagesetter
+fi
+exit 0

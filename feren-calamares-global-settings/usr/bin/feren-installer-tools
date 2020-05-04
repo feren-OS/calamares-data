@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$1" = "refresh-apt" ]; then
+    apt-get update
+    exit 0
+else
+    exit 1
+fi

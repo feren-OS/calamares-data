@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#Check free space on the disk to determine swap size
+totalmem=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+freespace=$(df -k / | tail -1 | tr -s ' ' | cut -d' ' -f4)
+freespaceafterswap=$(($freespace-$totalmem))
+totalmemmb=$(($totalmem/1024))
+echo "$totalmem $freespace $freespaceafterswap $totalmemmb"
+if [ "$freespaceafterswap" -le 4194304 ]; then
+    #Don't create a swapfile to be safe if the free space after creating it is less than 4GB
+    :
+else
+    #Swapfile generation if there is not yet a swap
+    if ! grep -q 'swap' /etc/fstab; then
+        swapfilelocat=/swapfile
+        dd if=/dev/zero of=$swapfilelocat bs=1024 count="$totalmemmb"k
+        chmod 600 $swapfilelocat
+        mkswap $swapfilelocat
+        echo "$swapfilelocat                            none      swap    sw   0 0" >> /etc/fstab
+    fi
+fi
+#Set boot flag
+if [ "$1" = "bios" ]; then
+    uuid=$(grep ' / ' /etc/fstab | grep -o '\UUID=[^ ]*')
+    devsd=$(findfs "$uuid")
+    devno=$(echo "${devsd#/dev/sd*}")
+    devno=$(echo "$devno" | sed -e 's/.*[^0-9]\([0-9]\+\)[^0-9]*$/\1/')
+    devremaining="${devsd#*"$devno"}"
+    devsdx=$(echo $devsd | sed 's/[0-9]\+$//')
+    parted $devsdx set $devno boot on
+fi
+#Set esp flag
+if [ "$1" = "uefi" ]; then
+    uuid=$(grep ' /boot/efi ' /etc/fstab | grep -o '\UUID=[^ ]*')
+    devsd=$(findfs "$uuid")
+    devno=$(echo "${devsd#/dev/sd*}")
+    devno=$(echo "$devno" | sed -e 's/.*[^0-9]\([0-9]\+\)[^0-9]*$/\1/')
+    devremaining="${devsd#*"$devno"}"
+    devsdx=$(echo $devsd | sed 's/[0-9]\+$//')
+    parted $devsdx set $devno boot on
+fi
+#Install oem-config-feren ready to prepare it
+/usr/bin/apt install oem-config-feren -y
+#Make OEM Config run on the first boot
+/usr/bin/oem-feren-prepare --automatic "FerenOS"
+/usr/bin/feren-oem-prepremove
+/usr/bin/feren-languagesetter --do-not-purge
+exit 0

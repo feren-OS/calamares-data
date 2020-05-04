@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ -f /etc/systemd/system/feren-language-set.service ]; then
+    systemctl disable feren-language-set
+fi

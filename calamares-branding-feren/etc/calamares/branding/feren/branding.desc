@@ -1,0 +1,29 @@
+---
+componentName: feren
+windowExpanding: normal
+windowSize: 800px,560px
+windowPlacement: center
+
+strings:
+    productName:         Feren OS
+    shortProductName:    Feren OS
+    version:             2020
+    shortVersion:        18.04
+    versionedName:       Feren OS
+    shortVersionedName:  Feren OS
+    bootloaderEntryName: Feren OS
+    productUrl:          https://ferenos.weebly.com/
+    supportUrl:          https://ferenos.weebly.com/help
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "icon.png"
+    productWelcome:      "welcome.png"
+
+slideshow:               "show.qml"
+
+style:
+   sidebarBackground:    "#121212"
+   sidebarText:          "#B6B6B6"
+   sidebarTextSelect:    "#FFFFFF"
+   sidebarTextHighlight: "#006AFF"

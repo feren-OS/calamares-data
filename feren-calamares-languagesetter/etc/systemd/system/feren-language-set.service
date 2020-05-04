@@ -1,0 +1,13 @@
+[Unit]
+Description=Set System Language Properly
+ConditionFileIsExecutable=/usr/bin/feren-languagesetter
+After=network.target systemd-user-sessions.service network-online.target
+Before=unattended-upgrades.service apt-daily-upgrade.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/feren-languagesetter
+TimeoutSec=infinity
+
+[Install]
+WantedBy=multi-user.target
